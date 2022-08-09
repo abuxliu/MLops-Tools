@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mnist
+  namespace: ospp
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ospp
+  project: ospp
+  source:
+    repoURL: https://github.com/abuxliu/MLops-Tools.git
+    targetRevision: HEAD
+    path: manifest
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+    - CreateNamespace=true

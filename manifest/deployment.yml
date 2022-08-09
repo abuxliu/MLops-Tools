@@ -1,0 +1,18 @@
+kind: Deployment
+metadata:
+  name: mnist
+spec:
+  selector:
+    matchLabels:
+      app: mnist
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mnist
+    spec:
+      containers:
+      - name: mnist
+        image: nginx:latest
+        ports:
+        - containerPort: 80
