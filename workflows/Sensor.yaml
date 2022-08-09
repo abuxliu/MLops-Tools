@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: gitlab
+  namespace: argo-events
+spec:
+  dependencies:
+    - name: a
+      eventSourceName: gitlab
+      eventName: a-1
+    - name: b
+      eventSourceName: gitlab
+      eventName: b-1
+  template:
+    serviceAccountName: operate-workflow-sa
+  triggers:
+  - template:
+      conditions: "a || b"
+      name: gitlab-workflow-trigger
+      k8s:
+        operation: create
+        parameters:
+        - dest: spec.arguments.parameters.0.value
+          src:
+            dataKey: body
+            dependencyName: test-dep
+        source:
+          resource:
+            apiVersion: argoproj.io/v1alpha1
+            kind: Workflow
+            metadata:
+              generateName: gitlab-workflow-
+            spec:
+              entrypoint: whalesay
+              arguments:
+                parameters:
+                - name: message
+                  value: hello world
+              templates:
+              - name: whalesay
+                inputs:
+                  parameters:
+                  - name: message
+                container:
+                  image: docker/whalesay:latest
+                  command: [cowsay]
+                  args: ["{{inputs.parameters.message}}"]

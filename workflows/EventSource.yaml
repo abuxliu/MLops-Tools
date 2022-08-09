@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: gitlab
+  namespace: argo-events
+spec:
+  service:
+    ports:
+    - port: 12000
+      targetPort: 12000
+  gitlab:
+    example:
+      projects:
+        - "openFriday/MLops-Tools"
+      webhook:
+        endpoint: /push
+        port: "12000"
+        method: POST
+        url: http://159.138.150.166:31508
+      events:
+        - PushEvents
+        - TagPushEvents
+      accessToken:
+        key: token
+        name: gitlab-access
+      secretToken:
+        key: token
+        name: gitlab-secret
+      enableSSLVerification: false
+      gitlabBaseURL: https://gitlab.com
+      deleteHookOnFinish: true
